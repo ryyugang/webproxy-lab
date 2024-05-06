@@ -6,7 +6,8 @@
 
 int main(void) {
   char *buf, *p;
-  char arg1[MAXLINE], arg2[MAXLINE], content[MAXLINE]; // 크기가 MAXLINE인 버퍼 3개 선언
+  // char arg1[MAXLINE], arg2[MAXLINE], content[MAXLINE]; // 크기가 MAXLINE인 버퍼 3개 선언
+  char content[MAXLINE]; /* 11.10 */
   int n1=0, n2=0; 
 
   if ((buf = getenv("QUERY_STRING")) != NULL) // getenv 함수를 사용해 QUERY_STRING 값을 buf에 할당
@@ -15,11 +16,15 @@ int main(void) {
     // 첫 번째 인자는 arg1, 두 번째 인자는 arg2
     p = strchr(buf, '&'); // buf에서 & 문자의 위치를 찾아 p에 할당
     *p = '\0'; // buf에서 & 문자의 위치를 NULL로 만든다 -> 문자열이 두 부분으로 분리된다
-    strcpy(arg1, buf); // buf 내용(분리된 앞 부분) 을 arg1에 복사
-    strcpy(arg2, p+1); // p+1부터 시작하는 문자열을 (분리된 뒷 부분) arg2에 복사
-    // arg1, arg2를 정수로 변환하여 n1, n2 변수에 저장
-    n1 = atoi(arg1); 
-    n2 = atoi(arg2);
+    // strcpy(arg1, buf); // buf 내용(분리된 앞 부분) 을 arg1에 복사
+    // strcpy(arg2, p+1); // p+1부터 시작하는 문자열을 (분리된 뒷 부분) arg2에 복사
+    // // arg1, arg2를 정수로 변환하여 n1, n2 변수에 저장
+    // n1 = atoi(arg1); 
+    // n2 = atoi(arg2);
+
+    /* 11.10 */
+    sscanf(buf, "num1 = %d", &n1);
+    sscanf(p + 1, "num2 = %d", &n2);
   }
 
   /* Response body */
