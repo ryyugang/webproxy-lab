@@ -57,7 +57,6 @@ void doit(int proxy_connfd)
   char buf[MAXLINE], host[MAXLINE], path[MAXLINE], port[MAXLINE], method[MAXLINE], uri[MAXLINE], version[MAXLINE];
   rio_t rio;
 
-  // [Client -> Proxy]
   /* Read request line and headers from Client */
   Rio_readinitb(&rio, proxy_connfd);
   Rio_readlineb(&rio, buf, MAXLINE);
@@ -72,13 +71,13 @@ void doit(int proxy_connfd)
     return;
   }
 
-  
   // 서버와의 연결 설정
   clientfd = Open_clientfd(host, port);
+  
   // Proxy -> Server request 전송
   p_request(clientfd, host, port, path, method);
 
-  // Server -> Proxy -> Client response 전송
+  // Server -> Proxy response 전송
   p_response(proxy_connfd, clientfd);
 
   // 연결 종료
@@ -104,21 +103,19 @@ void p_request(int clientfd, char *host, char *port, char *path, char *method)
   Rio_writen(clientfd, buf, (size_t)strlen(buf));
 }
 
-// Server -> Proxy -> Client response 전송 메소드
+// Server -> Proxy response 전송 메소드
 void p_response(int proxy_connfd, int clientfd)
 {
   char buf[MAXLINE];
   ssize_t n;
   rio_t rio;
 
-  // [Server -> Proxy]
   // 서버로부터 response 읽기
   Rio_readinitb(&rio, clientfd);
   while ((n = Rio_readlineb(&rio, buf, MAXLINE)) != 0)
   {
     printf("Proxy received %ld bytes from server\n", n);
 
-    // [Proxy -> Client]
     // Proxy로 HTTP response 전송
     Rio_writen(proxy_connfd, buf, n);
   }
